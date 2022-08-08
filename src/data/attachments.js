@@ -19,13 +19,6 @@ const attachmentSavePromises = {};
 
 const attachmentStorageTypes = {};
 
-function getErrorResult(msg = null) {
-  return {
-    url: `Attachment could not be saved${msg ? ": " + msg : ""}`,
-    failed: true
-  };
-}
-
 /**
  * @callback AddAttachmentStorageTypeFn
  * @param {string} name
@@ -164,14 +157,14 @@ function getLocalAttachmentUrl(attachmentId, desiredName = null) {
 let saveDiscordAttachment; // Workaround to inconsistent IDE bug with @type and anonymous functions
 saveDiscordAttachment = async (attachment) => {
   if (attachment.size > 1024 * 1024 * 8) {
-    return getErrorResult("attachment too large (max 8MB)");
+    throw new Error("Attachment too large (max 8MB)");
   }
 
   const attachmentChannel = utils.getAttachmentStorageChannel();
 
   const file = await attachmentToDiscordFileObject(attachment);
   const savedAttachment = await createDiscordAttachmentMessage(attachmentChannel, file);
-  if (! savedAttachment) return getErrorResult();
+  if (! savedAttachment) throw new Error("Unknown error while storing attachment");
 
   return { url: savedAttachment.url };
 };
@@ -184,8 +177,7 @@ async function createDiscordAttachmentMessage(channel, file, tries = 0) {
     return attachmentMessage.attachments[0];
   } catch (e) {
     if (tries > 3) {
-      console.error(`Attachment storage message could not be created after 3 tries: ${e.message}`);
-      return;
+      throw new Error(`Attachment storage message could not be created after 3 tries: ${e.message}`);
     }
 
     return createDiscordAttachmentMessage(channel, file, tries);
@@ -211,22 +203,26 @@ async function attachmentToDiscordFileObject(attachment) {
 /**
  * @type {SaveAttachmentFn}
  */
-const saveAttachment = (attachment) => {
+const saveAttachment = async (attachment) => {
   if (attachmentSavePromises[attachment.id]) {
-    return attachmentSavePromises[attachment.id];
+    return await attachmentSavePromises[attachment.id];
   }
 
-  if (attachmentStorageTypes[config.attachmentStorage]) {
+  try {
+    const storage = attachmentStorageTypes[config.attachmentStorage];
+    if (!storage) {
+      throw new Error(`Unknown attachment storage option: ${config.attachmentStorage}`);
+    }
+
     attachmentSavePromises[attachment.id] = Promise.resolve(attachmentStorageTypes[config.attachmentStorage](attachment));
-  } else {
-    throw new Error(`Unknown attachment storage option: ${config.attachmentStorage}`);
-  }
-
-  attachmentSavePromises[attachment.id].then(() => {
+    return await attachmentSavePromises[attachment.id];
+  } catch (e) {
+    // if error occurred, log and return original url
+    await utils.postLog(`Failed to save attachment (${attachment.url}): \`${e.message}\`.`);
+    return { url: attachment.url };
+  } finally {
     delete attachmentSavePromises[attachment.id];
-  });
-
-  return attachmentSavePromises[attachment.id];
+  }
 };
 
 /**
