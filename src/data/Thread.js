@@ -781,7 +781,7 @@ class Thread {
 
   /**
    * @param {String} time
-   * @param {Eris~User} user
+   * @param {Eris.User} user
    * @param {Number} silent
    * @returns {Promise<void>}
    */
@@ -841,7 +841,7 @@ class Thread {
 
   /**
    * @param {String} time
-   * @param {Eris~User} user
+   * @param {Eris.User} user
    * @returns {Promise<void>}
    */
   async scheduleSuspend(time, user) {
