@@ -78,7 +78,7 @@ module.exports = ({ bot, knex, config, commands }) => {
     const rendered = renderSnippet(snippet.body, args);
 
     const replied = await thread.replyToUser(msg.member, rendered, [], isAnonymous, msg.messageReference);
-    if (replied) msg.delete();
+    if (replied) msg.delete().catch(utils.noop);
   });
 
   // Show or add a snippet

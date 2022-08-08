@@ -146,7 +146,7 @@ function initBaseMessageHandlers() {
       if (! utils.isStaff(msg.member)) return; // Only staff are allowed to reply
 
       const replied = await thread.replyToUser(msg.member, msg.content.trim(), msg.attachments, config.alwaysReplyAnon || false, msg.messageReference);
-      if (replied) msg.delete();
+      if (replied) msg.delete().catch(utils.noop);
     } else {
       // Otherwise just save the messages as "chat" in the logs
       thread.saveChatMessageToLogs(msg);
