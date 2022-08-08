@@ -12,7 +12,7 @@ module.exports = ({ bot, knex, config, commands }) => {
     }
 
     const replied = await thread.replyToUser(msg.member, args.text || "", msg.attachments, config.forceAnon, msg.messageReference);
-    if (replied) msg.delete();
+    if (replied) msg.delete().catch(utils.noop);
   }, {
     aliases: ["r"]
   });
@@ -25,7 +25,7 @@ module.exports = ({ bot, knex, config, commands }) => {
     }
 
     const replied = await thread.replyToUser(msg.member, args.text || "", msg.attachments, true, msg.messageReference);
-    if (replied) msg.delete();
+    if (replied) msg.delete().catch(utils.noop);
   }, {
     aliases: ["ar"]
   });
