@@ -134,7 +134,11 @@ const defaultFormatters = {
   formatUserReplyThreadMessage(threadMessage) {
     let result = `**${threadMessage.user_name}:** ${threadMessage.body}`;
 
-    for (const link of threadMessage.attachments) {
+    for (let link of threadMessage.attachments) {
+      if (threadMessage.small_attachments.includes(link)) {
+        // avoid duplicate embed, already sending as attachment
+        link = `<${link}>`;
+      }
       result += `\n\n${link}`;
     }
 
