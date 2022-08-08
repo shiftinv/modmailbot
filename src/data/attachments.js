@@ -166,17 +166,7 @@ saveDiscordAttachment = async (attachment) => {
     return getErrorResult("attachment too large (max 8MB)");
   }
 
-  const attachmentChannelId = config.attachmentStorageChannelId;
-  const inboxGuild = utils.getInboxGuild();
-
-  if (! inboxGuild.channels.has(attachmentChannelId)) {
-    throw new Error("Attachment storage channel not found!");
-  }
-
-  const attachmentChannel = inboxGuild.channels.get(attachmentChannelId);
-  if (! (attachmentChannel instanceof Eris.TextChannel)) {
-    throw new Error("Attachment storage channel must be a text channel!");
-  }
+  const attachmentChannel = utils.getAttachmentStorageChannel();
 
   const file = await attachmentToDiscordFileObject(attachment);
   const savedAttachment = await createDiscordAttachmentMessage(attachmentChannel, file);

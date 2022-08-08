@@ -58,6 +58,25 @@ function getLogChannel() {
   return _logChannel;
 }
 
+/**
+ * Returns the designated attachment channel, or null if not set
+ * @returns {Eris.TextChannel}
+ */
+ function getAttachmentStorageChannel() {
+  // NOTE: may also be outside of inbox guild
+  const _channel = bot.getChannel(config.attachmentStorageChannelId);
+
+  if (! _channel) {
+    throw new BotError("Attachment storage channel (attachmentStorageChannelId) not found!");
+  }
+
+  if (! (_channel instanceof Eris.TextChannel)) {
+    throw new BotError("Make sure the attachmentStorageChannelId option is set to a text channel!");
+  }
+
+  return _channel;
+}
+
 function postLog(...args) {
   return getLogChannel().createMessage(...args);
 }
@@ -575,6 +594,7 @@ module.exports = {
   getInboxGuild,
   getMainGuilds,
   getLogChannel,
+  getAttachmentStorageChannel,
   postError,
   postLog,
 
