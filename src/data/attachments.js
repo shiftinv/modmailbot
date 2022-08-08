@@ -41,6 +41,7 @@ function getErrorResult(msg = null) {
 /**
  * @typedef {object} AttachmentStorageTypeResult
  * @property {string} url
+ * @property {boolean} [canRelay]
  */
 
 /**
@@ -65,7 +66,7 @@ function getErrorResult(msg = null) {
  * Saves the given attachment based on the configured storage system
  * @callback SaveAttachmentFn
  * @param {Eris.Attachment} attachment
- * @returns {Promise<{ url: string }>}
+ * @returns {Promise<AttachmentStorageTypeResult>}
  */
 
 /**
@@ -73,7 +74,7 @@ function getErrorResult(msg = null) {
  */
 let passthroughOriginalAttachment; // Workaround to inconsistent IDE bug with @type and anonymous functions
 passthroughOriginalAttachment = (attachment) => {
-  return { url: attachment.url };
+  return { url: attachment.url, canRelay: true };
 };
 
 /**

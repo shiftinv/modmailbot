@@ -396,7 +396,11 @@ class Thread {
       const savedAttachment = await attachments.saveAttachment(attachment);
 
       // Forward small attachments (<2MB) as attachments, link to larger ones
-      if (config.relaySmallAttachmentsAsAttachments && attachment.size <= config.smallAttachmentLimit) {
+      if (
+        savedAttachment.canRelay
+        && config.relaySmallAttachmentsAsAttachments
+        && attachment.size <= config.smallAttachmentLimit
+      ) {
         const file = await attachments.attachmentToDiscordFileObject(attachment);
         attachmentFiles.push(file);
         smallAttachmentLinks.push(savedAttachment.url);
