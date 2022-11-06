@@ -632,15 +632,16 @@ class Thread {
    * @returns {Promise<void>}
    */
   async saveChatMessageToLogs(msg) {
-    // TODO: Save attachments?
-    return this._addThreadMessageToDB({
+    const threadMessage = new ThreadMessage({
       message_type: THREAD_MESSAGE_TYPE.CHAT,
       user_id: msg.author.id,
       user_name: msg.author.username,
       body: msg.content,
       is_anonymous: 0,
-      dm_message_id: msg.id
+      dm_message_id: msg.id,
+      attachments: msg.attachments.map((a) => a.url)
     });
+    return this._addThreadMessageToDB(threadMessage.getSQLProps());
   }
 
   async saveCommandMessageToLogs(msg) {
