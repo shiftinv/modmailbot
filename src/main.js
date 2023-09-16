@@ -107,10 +107,13 @@ function initStatus() {
       "watching": Eris.Constants.ActivityTypes.WATCHING,
       "listening": Eris.Constants.ActivityTypes.LISTENING,
       "streaming": Eris.Constants.ActivityTypes.STREAMING,
+      "custom": Eris.Constants.ActivityTypes.CUSTOM,
     }[config.statusType] || Eris.Constants.ActivityTypes.GAME;
 
     if (type === Eris.Constants.ActivityTypes.STREAMING) {
       bot.editStatus(null, { name: config.status, type, url: config.statusUrl });
+    } else if (type === Eris.Constants.ActivityTypes.CUSTOM) {
+      bot.editStatus(null, { name: "Custom Status", state: config.status, type });
     } else {
       bot.editStatus(null, { name: config.status, type });
     }
